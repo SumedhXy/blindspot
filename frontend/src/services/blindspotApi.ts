@@ -22,10 +22,21 @@ interface ResponseEnvelope<T> {
   error?: string;
 }
 
+function extractErrorMessage(errorData: any, fallback: string): string {
+  if (typeof errorData?.error === "string" && errorData.error) return errorData.error;
+  if (typeof errorData?.message === "string" && errorData.message) return errorData.message;
+  if (typeof errorData?.detail === "string" && errorData.detail) return errorData.detail;
+  if (Array.isArray(errorData?.detail) && errorData.detail.length > 0) {
+    return errorData.detail.map((d: any) => d.msg || d.message || JSON.stringify(d)).join(", ");
+  }
+  return fallback;
+}
+
 export async function fetchSampleDecision(): Promise<BlindSpotAnalyzeRequest> {
   const res = await fetch(`${BLINDSPOT_API}/sample`);
   if (!res.ok) {
-    throw new Error(`Failed to load sample decision (${res.status})`);
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(extractErrorMessage(errorData, `Failed to load sample decision (${res.status})`));
   }
   const envelope: ResponseEnvelope<BlindSpotAnalyzeRequest> = await res.json();
   return envelope.data;
@@ -44,11 +55,7 @@ export async function analyzeDecision(
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(
-      errorData.detail?.[0]?.msg ||
-        errorData.message ||
-        `Analysis failed (${res.status})`
-    );
+    throw new Error(extractErrorMessage(errorData, `Analysis failed (${res.status})`));
   }
 
   const envelope: ResponseEnvelope<BlindSpotAnalysisResponse> = await res.json();
@@ -68,11 +75,7 @@ export async function submitStressTestFeedback(
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(
-      errorData.detail?.[0]?.msg ||
-        errorData.message ||
-        `Stress test submission failed (${res.status})`
-    );
+    throw new Error(extractErrorMessage(errorData, `Stress test submission failed (${res.status})`));
   }
 
   const envelope: ResponseEnvelope<StressTestFeedbackResponse> = await res.json();
@@ -92,11 +95,7 @@ export async function challengeReasoning(
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(
-      errorData.detail?.[0]?.msg ||
-        errorData.message ||
-        `Challenge reasoning failed (${res.status})`
-    );
+    throw new Error(extractErrorMessage(errorData, `Challenge reasoning failed (${res.status})`));
   }
 
   const envelope: ResponseEnvelope<ChallengeReasoningResponse> = await res.json();

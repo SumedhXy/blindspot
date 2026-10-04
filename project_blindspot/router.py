@@ -1,12 +1,13 @@
 """
 BlindSpot FastAPI Router & Endpoints.
 Mounts under /api/v1/blindspot with strict validation, response envelopes,
-asynchronous non-blocking concurrency, and LRU cache acceleration.
+asynchronous non-blocking concurrency, rate limiting, and LRU cache acceleration.
 """
 
 import asyncio
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Depends, Response, status
 from backend.schemas.common import ResponseEnvelope
+from backend.core.rate_limiter import rate_limit_dependency
 from project_blindspot.schemas import (
     BlindSpotAnalyzeRequest,
     BlindSpotAnalysisResponse,
@@ -16,6 +17,7 @@ from project_blindspot.schemas import (
     ChallengeReasoningResponse,
 )
 from project_blindspot.ai_engine import BlindSpotAIEngine
+from project_blindspot.guardrails import enforce_analysis_guardrails
 
 router = APIRouter(prefix="/blindspot", tags=["BlindSpot — Decision Stress-Test"])
 blindspot_engine = BlindSpotAIEngine()
@@ -26,6 +28,7 @@ blindspot_engine = BlindSpotAIEngine()
     response_model=ResponseEnvelope[BlindSpotAnalysisResponse],
     status_code=status.HTTP_200_OK,
     summary="Conduct 6-Lens Decision Reasoning Audit",
+    dependencies=[Depends(rate_limit_dependency)],
 )
 async def analyze_decision_reasoning(req: BlindSpotAnalyzeRequest) -> ResponseEnvelope[BlindSpotAnalysisResponse]:
     """
@@ -40,9 +43,10 @@ async def analyze_decision_reasoning(req: BlindSpotAnalyzeRequest) -> ResponseEn
     Returns:
         ResponseEnvelope[BlindSpotAnalysisResponse]: Structured 6-lens reasoning audit with agent execution trace.
     """
-    analysis = await asyncio.to_thread(blindspot_engine.analyze_decision, req)
+    raw_analysis = await asyncio.to_thread(blindspot_engine.analyze_decision, req)
+    guarded_analysis = enforce_analysis_guardrails(raw_analysis)
     return ResponseEnvelope(
-        data=analysis,
+        data=guarded_analysis,
         message="Decision reasoning audit completed successfully across 6 analytical lenses.",
     )
 
@@ -52,6 +56,7 @@ async def analyze_decision_reasoning(req: BlindSpotAnalyzeRequest) -> ResponseEn
     response_model=ResponseEnvelope[StressTestFeedbackResponse],
     status_code=status.HTTP_200_OK,
     summary="Evaluate Interactive Stress-Test Response",
+    dependencies=[Depends(rate_limit_dependency)],
 )
 async def evaluate_stress_test_response(req: StressTestFeedbackRequest) -> ResponseEnvelope[StressTestFeedbackResponse]:
     """
@@ -76,6 +81,7 @@ async def evaluate_stress_test_response(req: StressTestFeedbackRequest) -> Respo
     response_model=ResponseEnvelope[ChallengeReasoningResponse],
     status_code=status.HTTP_200_OK,
     summary="Generate Adversarial Reasoning Challenge",
+    dependencies=[Depends(rate_limit_dependency)],
 )
 async def challenge_user_reasoning(req: ChallengeReasoningRequest) -> ResponseEnvelope[ChallengeReasoningResponse]:
     """
