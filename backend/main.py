@@ -56,7 +56,28 @@ app.add_api_route("/health", health_check, methods=["GET"], tags=["Health"])
 # 5. Include API v1 Router
 app.include_router(router, prefix=settings.API_PREFIX)
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# 6. Mount Frontend Static Files for SPA (Production Container)
+frontend_dist = Path("frontend/dist")
+if frontend_dist.exists() and (frontend_dist / "index.html").exists():
+    if (frontend_dist / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=frontend_dist / "assets"), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        # Don't hijack API or docs or health
+        if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("openapi.json"):
+            return None
+        file_path = frontend_dist / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(frontend_dist / "index.html")
+
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("backend.main:app", host=settings.HOST, port=settings.PORT, reload=settings.DEBUG)
+
