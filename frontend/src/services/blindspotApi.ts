@@ -10,7 +10,7 @@ import type {
   StressTestFeedbackResponse,
   ChallengeReasoningRequest,
   ChallengeReasoningResponse,
-} from "../../../project_blindspot/types";
+} from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const BLINDSPOT_API = `${API_BASE_URL}/api/v1/blindspot`;

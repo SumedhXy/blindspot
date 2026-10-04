@@ -3,7 +3,7 @@ import { ShieldAlert, CheckCircle2, ArrowRight, Sliders, Zap, Check } from "luci
 import type {
   StressTestScenario,
   StressTestFeedbackResponse,
-} from "../../../../project_blindspot/types";
+} from "../../types";
 import { submitStressTestFeedback } from "../../services/blindspotApi";
 
 interface StressTestSectionProps {

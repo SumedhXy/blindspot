@@ -12,8 +12,8 @@ import {
   DollarSign,
   GraduationCap,
 } from "lucide-react";
-import type { BlindSpotAnalyzeRequest } from "../../../../project_blindspot/types";
-import { BLINDSPOT_THEME } from "../../../../project_blindspot/theme";
+import type { BlindSpotAnalyzeRequest } from "../../types";
+import { BLINDSPOT_THEME } from "../../theme";
 
 interface DecisionInputFormProps {
   initialData?: BlindSpotAnalyzeRequest;

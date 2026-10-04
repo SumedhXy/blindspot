@@ -3,7 +3,7 @@ import { AlertTriangle, ArrowRight, Shield, Sparkles } from "lucide-react";
 import type {
   BlindSpotAnalyzeRequest,
   BlindSpotAnalysisResponse,
-} from "../../../project_blindspot/types";
+} from "../types";
 import {
   analyzeDecision,
   fetchSampleDecision,

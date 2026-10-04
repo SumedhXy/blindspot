@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Swords, ThumbsUp, ThumbsDown, Loader2, X, AlertTriangle, ShieldCheck } from "lucide-react";
-import type { ChallengeReasoningResponse } from "../../../../project_blindspot/types";
+import type { ChallengeReasoningResponse } from "../../types";
 import { challengeReasoning } from "../../services/blindspotApi";
 
 interface ChallengeReasoningModalProps {

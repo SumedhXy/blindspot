@@ -11,7 +11,15 @@ import {
   Swords,
   Filter,
 } from "lucide-react";
-import type { BlindSpotAnalysisResponse } from "../../types";
+import type {
+  BlindSpotAnalysisResponse,
+  PerspectiveLensItem,
+  EvidenceGapItem,
+  SensitivityFactor,
+  AssumptionItem,
+  MissingInfoItem,
+  ReasoningTensionItem,
+} from "../../types";
 
 interface ReasoningMapProps {
   analysis: BlindSpotAnalysisResponse;
@@ -489,7 +497,7 @@ export default function ReasoningMap({
         {/* 4. ALTERNATIVE PERSPECTIVES */}
         {activeLens === "perspectives" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.25rem" }}>
-            {analysis.alternative_perspectives.map((item, idx) => (
+            {analysis.alternative_perspectives.map((item: PerspectiveLensItem, idx: number) => (
               <div key={idx} className="mc-card-nested" style={{ display: "flex", flexDirection: "column", padding: "1.75rem" }}>
                 <span style={{ fontSize: "17px", fontWeight: 700, color: "var(--ink-black)" }}>
                   🔭 {item.lens_name}
@@ -508,7 +516,7 @@ export default function ReasoningMap({
         {/* 5. EVIDENCE GAPS */}
         {activeLens === "evidenceGaps" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {analysis.evidence_gaps.map((item, idx) => (
+            {analysis.evidence_gaps.map((item: EvidenceGapItem, idx: number) => (
               <div key={idx} className="mc-card-nested" style={{ padding: "1.75rem 2rem" }}>
                 <div>
                   <span style={{ fontSize: "13px", color: "var(--slate-gray)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.03em" }}>
@@ -531,7 +539,7 @@ export default function ReasoningMap({
                     EVIDENCE TO SEEK BEFORE COMMITTING:
                   </span>
                   <ul style={{ margin: "6px 0 0 1.5rem", padding: 0, fontSize: "16.5px", color: "var(--charcoal)", lineHeight: "1.6" }}>
-                    {item.evidence_to_seek.map((ev, i) => (
+                    {item.evidence_to_seek.map((ev: string, i: number) => (
                       <li key={i}>{ev}</li>
                     ))}
                   </ul>
@@ -544,7 +552,7 @@ export default function ReasoningMap({
         {/* 6. SENSITIVITY RANKING */}
         {activeLens === "sensitivity" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {analysis.sensitivity_factors.map((item, idx) => (
+            {analysis.sensitivity_factors.map((item: SensitivityFactor, idx: number) => (
               <div key={idx} className="mc-card-nested" style={{ padding: "1.75rem 2rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
                   <h3 style={{ fontSize: "1.3rem", fontWeight: 500, color: "var(--ink-black)" }}>
