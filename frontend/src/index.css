@@ -1,0 +1,582 @@
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,400;0,450;0,500;0,600;0,700;1,400;1,450&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==========================================================================
+   MASTERCARD-INSPIRED EDITORIAL DESIGN SYSTEM (ENHANCED LEGIBILITY & VISUALS)
+   Warm Canvas Cream, 20px / 40px / 999px Radii, Soft Editorial Atmosphere
+   ========================================================================== */
+
+:root {
+  /* Surface & Canvas Colors */
+  --canvas-cream: #F3F0EE;
+  --lifted-cream: #FCFBFA;
+  --surface-white: #FFFFFF;
+  --soft-bone: #F4F4F4;
+
+  /* Ink & Typography */
+  --ink-black: #141413;
+  --charcoal: #262627;
+  --slate-gray: #696969;
+  --granite: #555555;
+  --dust-taupe: #D1CDC7;
+
+  /* Accent & Signals */
+  --mastercard-red: #EB001B;
+  --mastercard-yellow: #F79E1B;
+  --signal-orange: #CF4500;
+  --light-signal-orange: #F37338;
+  --clay-rust: #9A3A0A;
+  --link-blue: #3860BE;
+
+  /* Radii Scale (Load-Bearing: 20px / 40px / 999px) */
+  --radius-sm: 8px;
+  --radius-btn: 20px;
+  --radius-stadium: 40px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* Elevation Shadows (Soft Atmospheric Cushioning) */
+  --shadow-nav: rgba(0, 0, 0, 0.05) 0px 4px 24px 0px;
+  --shadow-halo: rgba(0, 0, 0, 0.08) 0px 24px 48px 0px;
+  --shadow-card: rgba(0, 0, 0, 0.06) 0px 10px 30px 0px;
+
+  /* Borders */
+  --border-warm: #E2DDD8;
+  --border-ink: 1.5px solid #141413;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--canvas-cream);
+  color: var(--ink-black);
+}
+
+body {
+  background-color: var(--canvas-cream);
+  color: var(--ink-black);
+  font-family: 'Sofia Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 450; /* Signature Mastercard 450 weight */
+  font-size: 18.5px; /* Enlarged for maximum readability and prominent context */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Typography Hierarchy - Large, punchy & editorial */
+h1, h2, h3, h4 {
+  font-family: 'Sofia Sans', -apple-system, sans-serif;
+  font-weight: 500; /* Medium weight 500 */
+  letter-spacing: -0.02em; /* Tight -2% letter spacing */
+  color: var(--ink-black);
+}
+
+h1 {
+  font-size: clamp(2.6rem, 4.2vw, 3.8rem);
+  line-height: 1.12;
+}
+
+h2 {
+  font-size: clamp(1.9rem, 2.8vw, 2.5rem);
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+p {
+  font-weight: 450;
+  color: var(--charcoal);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+/* Eyebrow Label with Accent Dot */
+.mc-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em; /* +5% tracking */
+  text-transform: uppercase;
+  color: var(--slate-gray);
+}
+
+.mc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--light-signal-orange);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.mc-dot-pulse {
+  animation: pulse-dot 1.8s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.65; }
+}
+
+/* Ghost Watermark Headline */
+.ghost-watermark {
+  font-size: clamp(4rem, 9vw, 7.5rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: #E4DED6;
+  line-height: 0.88;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* Form Inputs & Fields (Crisp & High Contrast) */
+button, input, textarea, select {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--light-signal-orange);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   BUTTONS (Mastercard Spec)
+   ========================================================================== */
+
+/* Primary — Ink Pill */
+.ui-button--primary, .mc-btn-primary {
+  background: var(--ink-black);
+  color: var(--canvas-cream);
+  border: 1.5px solid var(--ink-black);
+  border-radius: var(--radius-btn); /* 20px */
+  padding: 10px 28px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.ui-button--primary:hover:not(:disabled), .mc-btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(20, 20, 19, 0.18);
+}
+
+.ui-button--primary:active, .mc-btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Secondary — Outlined White Pill */
+.ui-button--secondary, .mc-btn-secondary {
+  background: var(--surface-white);
+  color: var(--ink-black);
+  border: 1.5px solid var(--ink-black);
+  border-radius: var(--radius-btn); /* 20px */
+  padding: 9px 24px;
+  font-size: 16px;
+  font-weight: 450;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-nav);
+}
+
+.ui-button--secondary:hover:not(:disabled), .mc-btn-secondary:hover:not(:disabled) {
+  background: var(--lifted-cream);
+  border-color: var(--ink-black);
+  transform: translateY(-1px);
+}
+
+/* Danger / Stress Trigger Pill */
+.ui-button--danger {
+  background: var(--clay-rust);
+  color: var(--surface-white);
+  border: 1.5px solid var(--clay-rust);
+  border-radius: var(--radius-btn);
+  padding: 9px 24px;
+  font-size: 15.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.ui-button--danger:hover {
+  background: #7e2d07;
+}
+
+/* Satellite Circular CTA */
+.mc-satellite {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface-white);
+  color: var(--ink-black);
+  border: 1.5px solid var(--border-warm);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  flex-shrink: 0;
+}
+.mc-satellite:hover {
+  transform: scale(1.08);
+  background: var(--canvas-cream);
+  border-color: var(--ink-black);
+}
+
+/* Circular Portrait Avatar Frame */
+.mc-circle-portrait {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fce8db 0%, #fae1ce 100%);
+  border: 2px solid var(--border-warm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  position: relative;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.mc-satellite-badge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--surface-white);
+  border: 1.5px solid var(--ink-black);
+  color: var(--ink-black);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Signal Orange Pill */
+.mc-btn-signal {
+  background: var(--signal-orange);
+  color: var(--surface-white);
+  border-radius: 24px;
+  padding: 5px 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   CARDS & CONTAINERS (Stadium & Lifted Surfaces)
+   ========================================================================== */
+
+.ui-card, .mc-card {
+  background: var(--lifted-cream);
+  border: 1.5px solid var(--border-warm);
+  border-radius: var(--radius-stadium); /* Signature 40px */
+  padding: 2.25rem 2.75rem;
+  box-shadow: var(--shadow-halo);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mc-card-nested {
+  background: var(--surface-white);
+  border: 1.5px solid var(--border-warm);
+  border-radius: 28px;
+  padding: 1.5rem 1.75rem;
+  box-shadow: var(--shadow-nav);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.mc-card-nested:hover {
+  border-color: rgba(20, 20, 19, 0.3);
+}
+
+/* Floating Navigation Pill */
+.mc-floating-nav {
+  position: sticky;
+  top: 20px;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(226, 221, 216, 0.85);
+  border-radius: var(--radius-pill); /* 999px */
+  padding: 14px 32px;
+  box-shadow: var(--shadow-nav);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto 2.25rem;
+}
+
+/* Dual Brand Circle Icon */
+.mc-brand-circles {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 42px;
+  height: 26px;
+}
+.mc-circle-red {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--mastercard-red);
+  position: absolute;
+  left: 0;
+  opacity: 0.95;
+}
+.mc-circle-yellow {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--mastercard-yellow);
+  position: absolute;
+  left: 16px;
+  opacity: 0.92;
+  mix-blend-mode: multiply;
+}
+
+/* Badges */
+.ui-badge, .mc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ui-badge--default {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--granite);
+  border: 1px solid var(--border-warm);
+}
+
+.ui-badge--danger {
+  background: rgba(207, 69, 0, 0.12);
+  color: var(--clay-rust);
+  border: 1.5px solid rgba(207, 69, 0, 0.28);
+}
+
+.ui-badge--warning {
+  background: rgba(243, 115, 56, 0.14);
+  color: #a3410a;
+  border: 1.5px solid rgba(243, 115, 56, 0.35);
+}
+
+.ui-badge--success {
+  background: rgba(46, 139, 87, 0.12);
+  color: #1e633d;
+  border: 1.5px solid rgba(46, 139, 87, 0.28);
+}
+
+.ui-badge--info {
+  background: rgba(56, 96, 190, 0.1);
+  color: var(--link-blue);
+  border: 1.5px solid rgba(56, 96, 190, 0.28);
+}
+
+/* Fields (Enlarged, Prominent & High Contrast) */
+.ui-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ui-label {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--ink-black);
+}
+.ui-input, .ui-textarea {
+  width: 100%;
+  background: var(--surface-white);
+  border: 1.5px solid var(--border-warm);
+  border-radius: 20px;
+  padding: 15px 22px;
+  color: var(--ink-black);
+  font-size: 18px;
+  font-weight: 450;
+  line-height: 1.55;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.ui-input:focus, .ui-textarea:focus {
+  border-color: var(--ink-black);
+  outline: none;
+  box-shadow: 0 0 0 3.5px rgba(20, 20, 19, 0.1);
+}
+
+/* Preset Benchmark Cards (Visual & Interactive) */
+.mc-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.mc-preset-card {
+  background: var(--surface-white);
+  border: 1.5px solid var(--border-warm);
+  border-radius: 22px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.mc-preset-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--ink-black);
+  box-shadow: 0 10px 24px rgba(20, 20, 19, 0.08);
+}
+
+.mc-preset-card.active {
+  background: var(--lifted-cream);
+  border-color: var(--signal-orange);
+  box-shadow: 0 0 0 2px rgba(207, 69, 0, 0.2);
+}
+
+/* Range Slider Styling */
+.mc-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #E2DDD8;
+  outline: none;
+  transition: opacity 0.2s;
+}
+
+.mc-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--signal-orange);
+  border: 2.5px solid var(--surface-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.mc-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+}
+
+/* Dark Warm-Black Footer */
+.mc-footer {
+  background: var(--ink-black);
+  color: var(--canvas-cream);
+  border-radius: 40px 40px 0 0;
+  padding: 56px 40px 64px;
+  margin-top: 4rem;
+}
+.mc-footer h2 {
+  color: var(--canvas-cream);
+}
+.mc-footer span, .mc-footer p {
+  color: #a8a39c;
+}
+
+/* Orbital Visual Path & Stage Tracker */
+.mc-stage-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--surface-white);
+  border: 1.5px solid var(--border-warm);
+  border-radius: var(--radius-pill);
+  padding: 10px 24px;
+  box-shadow: var(--shadow-nav);
+  overflow-x: auto;
+}
+
+.mc-stage-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--slate-gray);
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.mc-stage-step.active {
+  color: var(--ink-black);
+  font-weight: 700;
+}
+
+.mc-stage-step.completed {
+  color: var(--signal-orange);
+}
+
+.mc-stage-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  background: var(--soft-bone);
+  border: 1px solid var(--border-warm);
+}
+
+.mc-stage-step.active .mc-stage-icon {
+  background: var(--ink-black);
+  color: var(--canvas-cream);
+  border-color: var(--ink-black);
+}
+
+.mc-stage-step.completed .mc-stage-icon {
+  background: rgba(207, 69, 0, 0.12);
+  color: var(--signal-orange);
+  border-color: var(--signal-orange);
+}
+
+/* Constellation Orbital Line */
+.mc-constellation-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: var(--surface-white);
+  border: 1.5px solid var(--border-warm);
+  border-radius: 24px;
+  box-shadow: var(--shadow-nav);
+}

@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Frontend dependencies and builds
+frontend/node_modules/
+frontend/dist/
+frontend/.env*.local
+frontend/npm-debug.log*
+
+# Environment & Secrets
+.env
+.env.local
