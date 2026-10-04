@@ -17,10 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python requirements
-COPY backend/requirements.txt ./backend/requirements.txt
-RUN pip install --no-cache-dir -r backend/requirements.txt
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy Backend Code, Google Adapters, and Project BlindSpot Domain
+# Copy Backend Code, Google Adapters, and Project BlindSpot
 COPY backend/ ./backend/
 COPY google/ ./google/
 COPY project_blindspot/ ./project_blindspot/
