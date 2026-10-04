@@ -10,12 +10,8 @@ import {
   FileCheck,
   Swords,
   Filter,
-  Sparkles,
-  Layers,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
-import type { BlindSpotAnalysisResponse } from "../../../../project_blindspot/types";
+import type { BlindSpotAnalysisResponse } from "../../types";
 
 interface ReasoningMapProps {
   analysis: BlindSpotAnalysisResponse;
@@ -32,7 +28,6 @@ export default function ReasoningMap({
 }: ReasoningMapProps) {
   const [activeLens, setActiveLens] = useState<LensKey>("assumptions");
   const [filterHighOnly, setFilterHighOnly] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const getImpactBadge = (level: "HIGH" | "MEDIUM" | "LOW") => {
     return (
@@ -45,8 +40,6 @@ export default function ReasoningMap({
       </span>
     );
   };
-
-  const highSensitivityCount = analysis.assumptions.filter((a) => a.impact_level === "HIGH").length;
 
   const LENSES_CONFIG = [
     { key: "assumptions", label: "Assumptions", icon: AlertCircle, count: analysis.assumptions.length, desc: "Beliefs taken for granted", color: "var(--signal-orange)" },
@@ -163,6 +156,125 @@ export default function ReasoningMap({
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* EXECUTIVE 1-VIEW DECISION CLARITY MATRIX */}
+      <div
+        className="mc-card"
+        style={{
+          padding: "2rem 2.5rem",
+          background: "var(--surface-white)",
+          border: "2px solid var(--signal-orange)",
+          boxShadow: "0 12px 32px rgba(207, 69, 0, 0.08)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "1.25rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "22px" }}>⚡</span>
+            <div>
+              <div className="mc-eyebrow" style={{ color: "var(--signal-orange)", fontSize: "13px" }}>
+                EXECUTIVE 1-VIEW CLARITY MATRIX
+              </div>
+              <h3 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--ink-black)", margin: 0 }}>
+                The Bottom-Line Tradeoff Comparison
+              </h3>
+            </div>
+          </div>
+          <span
+            className="mc-badge"
+            style={{
+              background: "rgba(207, 69, 0, 0.12)",
+              color: "var(--signal-orange)",
+              fontWeight: 700,
+              fontSize: "13.5px",
+              padding: "6px 14px",
+            }}
+          >
+            🎯 Core Sensitivity: {analysis.sensitivity_factors[0]?.sensitivity_percentage || 90}% Volatility
+          </span>
+        </div>
+
+        {/* 2-Column Side-by-Side Tradeoff Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "1.25rem",
+            marginBottom: "1.25rem",
+          }}
+        >
+          {/* Path A */}
+          <div
+            style={{
+              background: "var(--lifted-cream)",
+              border: "1.5px solid var(--border-warm)",
+              borderRadius: "20px",
+              padding: "1.25rem 1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--link-blue)", fontWeight: 700, fontSize: "15px" }}>
+              <span>🚀</span> PATH A: PROCEED / COMMIT
+            </div>
+            <div style={{ fontSize: "15px", color: "var(--ink-black)", lineHeight: 1.5 }}>
+              <strong>Expected Gain:</strong> Captures primary upside, maintains momentum, and avoids immediate regret of missing out.
+            </div>
+            <div style={{ fontSize: "14.5px", color: "var(--mastercard-red)", background: "rgba(235, 0, 27, 0.06)", padding: "8px 12px", borderRadius: "12px" }}>
+              ⚠️ <strong>Hidden Friction:</strong> Heavily relies on <em>"{analysis.assumptions[0]?.title || "Unexamined optimism"}"</em> holding true without friction.
+            </div>
+          </div>
+
+          {/* Path B */}
+          <div
+            style={{
+              background: "var(--lifted-cream)",
+              border: "1.5px solid var(--border-warm)",
+              borderRadius: "20px",
+              padding: "1.25rem 1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--charcoal)", fontWeight: 700, fontSize: "15px" }}>
+              <span>🛡️</span> PATH B: RECHARGE / HOLD BUFFER
+            </div>
+            <div style={{ fontSize: "15px", color: "var(--ink-black)", lineHeight: 1.5 }}>
+              <strong>Expected Gain:</strong> Protects downside floor, preserves physical/financial runway, and avoids irreversible commitments.
+            </div>
+            <div style={{ fontSize: "14.5px", color: "var(--clay-rust)", background: "rgba(184, 80, 52, 0.08)", padding: "8px 12px", borderRadius: "12px" }}>
+              ⚠️ <strong>Hidden Friction:</strong> May incur opportunity cost or delay milestone velocity if baseline recovery isn't utilized productively.
+            </div>
+          </div>
+        </div>
+
+        {/* The Litmus Test Banner */}
+        <div
+          style={{
+            background: "var(--soft-bone)",
+            border: "1.5px solid var(--border-warm)",
+            borderRadius: "16px",
+            padding: "14px 18px",
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            flexWrap: "wrap",
+          }}
+        >
+          <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--signal-orange)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 700, fontSize: "16px", flexShrink: 0 }}>
+            ⚖️
+          </div>
+          <div style={{ flex: 1, minWidth: "240px" }}>
+            <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--slate-gray)", textTransform: "uppercase" }}>
+              The 60-Second Litmus Test (How to Decide)
+            </div>
+            <div style={{ fontSize: "15.5px", color: "var(--ink-black)", fontWeight: 500, lineHeight: 1.4 }}>
+              If your downside safety buffer is <strong>fully verified</strong> and no surprise high-stakes mandatory requirement exists today ➔ <strong>Hold & Recharge (Path B)</strong>. If your attendance/contract margin is <strong>fragile (&lt;75%)</strong> ➔ <strong>Commit & Show Up (Path A)</strong> to prevent irreversible debarment.
+            </div>
+          </div>
         </div>
       </div>
 
@@ -466,4 +578,3 @@ export default function ReasoningMap({
     </div>
   );
 }
-
