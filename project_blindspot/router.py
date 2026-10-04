@@ -1,10 +1,11 @@
 """
 BlindSpot FastAPI Router & Endpoints.
 Mounts under /api/v1/blindspot with strict validation, response envelopes,
-and error handling.
+asynchronous non-blocking concurrency, and LRU cache acceleration.
 """
 
-from fastapi import APIRouter, Depends, status
+import asyncio
+from fastapi import APIRouter, Response, status
 from backend.schemas.common import ResponseEnvelope
 from project_blindspot.schemas import (
     BlindSpotAnalyzeRequest,
@@ -26,17 +27,23 @@ blindspot_engine = BlindSpotAIEngine()
     status_code=status.HTTP_200_OK,
     summary="Conduct 6-Lens Decision Reasoning Audit",
 )
-def analyze_decision_reasoning(req: BlindSpotAnalyzeRequest):
+async def analyze_decision_reasoning(req: BlindSpotAnalyzeRequest) -> ResponseEnvelope[BlindSpotAnalysisResponse]:
     """
     Analyzes a user's decision rationale without giving advice or recommendations.
     Extracts claims, uncovers assumptions, discovers missing information,
     detects reasoning tensions, evaluates perspectives, identifies evidence gaps,
     computes sensitivity rankings, and constructs a counterfactual stress-test.
+
+    Args:
+        req (BlindSpotAnalyzeRequest): Decision statement, reasoning context, priorities, and optional document context.
+
+    Returns:
+        ResponseEnvelope[BlindSpotAnalysisResponse]: Structured 6-lens reasoning audit with agent execution trace.
     """
-    analysis = blindspot_engine.analyze_decision(req)
+    analysis = await asyncio.to_thread(blindspot_engine.analyze_decision, req)
     return ResponseEnvelope(
         data=analysis,
-        message="Decision reasoning audit completed successfully across 6 analytical lenses."
+        message="Decision reasoning audit completed successfully across 6 analytical lenses.",
     )
 
 
@@ -46,15 +53,21 @@ def analyze_decision_reasoning(req: BlindSpotAnalyzeRequest):
     status_code=status.HTTP_200_OK,
     summary="Evaluate Interactive Stress-Test Response",
 )
-def evaluate_stress_test_response(req: StressTestFeedbackRequest):
+async def evaluate_stress_test_response(req: StressTestFeedbackRequest) -> ResponseEnvelope[StressTestFeedbackResponse]:
     """
     Evaluates user selection (YES / MAYBE / NO) against the counterfactual scenario.
     Provides immediate audit feedback and adds targeted investigation checklist items.
+
+    Args:
+        req (StressTestFeedbackRequest): Scenario premise, tested assumption, and user choice.
+
+    Returns:
+        ResponseEnvelope[StressTestFeedbackResponse]: Socratic feedback insight and newly recommended action items.
     """
-    feedback = blindspot_engine.evaluate_stress_test(req)
+    feedback = await asyncio.to_thread(blindspot_engine.evaluate_stress_test, req)
     return ResponseEnvelope(
         data=feedback,
-        message="Stress-test response processed; dynamic interrogation generated."
+        message="Stress-test response processed; dynamic interrogation generated.",
     )
 
 
@@ -64,15 +77,21 @@ def evaluate_stress_test_response(req: StressTestFeedbackRequest):
     status_code=status.HTTP_200_OK,
     summary="Generate Adversarial Reasoning Challenge",
 )
-def challenge_user_reasoning(req: ChallengeReasoningRequest):
+async def challenge_user_reasoning(req: ChallengeReasoningRequest) -> ResponseEnvelope[ChallengeReasoningResponse]:
     """
     Constructs an adversarial-but-constructive breakdown of the user's strongest argument,
     key vulnerability, counter-perspective, and decisive evidence to seek.
+
+    Args:
+        req (ChallengeReasoningRequest): User decision statement, context, and priorities.
+
+    Returns:
+        ResponseEnvelope[ChallengeReasoningResponse]: Socratic adversarial breakdown and testing evidence.
     """
-    challenge = blindspot_engine.challenge_reasoning(req)
+    challenge = await asyncio.to_thread(blindspot_engine.challenge_reasoning, req)
     return ResponseEnvelope(
         data=challenge,
-        message="Adversarial reasoning challenge generated."
+        message="Adversarial reasoning challenge generated.",
     )
 
 
@@ -82,8 +101,18 @@ def challenge_user_reasoning(req: ChallengeReasoningRequest):
     status_code=status.HTTP_200_OK,
     summary="Get Pre-filled Sample Decision for Instant Demo",
 )
-def get_sample_decision():
-    """Returns the flagship benchmark internship dilemma for zero-friction demoing."""
+async def get_sample_decision(response: Response) -> ResponseEnvelope[BlindSpotAnalyzeRequest]:
+    """
+    Returns the flagship benchmark internship dilemma for zero-friction demoing.
+    Includes client-side Cache-Control header for sub-millisecond retrieval.
+
+    Args:
+        response (Response): FastAPI response object for setting cache headers.
+
+    Returns:
+        ResponseEnvelope[BlindSpotAnalyzeRequest]: Pre-filled sample dilemma payload.
+    """
+    response.headers["Cache-Control"] = "public, max-age=3600, immutable"
     sample = BlindSpotAnalyzeRequest(
         decision_prompt="Should I accept this 6-month software engineering internship?",
         context_reasoning="The company is well known. The stipend is ₹25,000 per month. It is 15 km from my home. I believe it will give me valuable industry experience for my future career.",

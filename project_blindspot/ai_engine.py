@@ -8,8 +8,12 @@ Implements:
 """
 
 import re
+import time
+import hashlib
 import logging
-from typing import Optional, List, Dict, Any
+from collections import OrderedDict
+from threading import Lock
+from typing import Optional, List, Dict, Any, Tuple
 from google.adapters.gemini_adapter import GeminiAdapter
 from backend.core.security import sanitize_prompt_input as sanitize_prompt
 from project_blindspot.schemas import (
@@ -39,14 +43,63 @@ from project_blindspot.prompts import (
 logger = logging.getLogger("blindspot.ai")
 
 
+class SimpleLRUCache:
+    """High-performance thread-safe in-memory LRU cache with TTL for zero-latency AI responses."""
+
+    def __init__(self, maxsize: int = 256, ttl_seconds: int = 3600):
+        self._cache: OrderedDict[str, Tuple[Any, float]] = OrderedDict()
+        self._maxsize = maxsize
+        self._ttl = ttl_seconds
+        self._lock = Lock()
+
+    def get(self, key: str) -> Optional[Any]:
+        with self._lock:
+            if key not in self._cache:
+                return None
+            value, timestamp = self._cache[key]
+            if time.time() - timestamp > self._ttl:
+                del self._cache[key]
+                return None
+            self._cache.move_to_end(key)
+            return value
+
+    def set(self, key: str, value: Any) -> None:
+        with self._lock:
+            if key in self._cache:
+                self._cache.move_to_end(key)
+            self._cache[key] = (value, time.time())
+            if len(self._cache) > self._maxsize:
+                self._cache.popitem(last=False)
+
+    def clear(self) -> None:
+        with self._lock:
+            self._cache.clear()
+
+
 class BlindSpotAIEngine:
-    """Multi-Agent Reasoning Engine for BlindSpot."""
+    """Multi-Agent Reasoning Engine for BlindSpot with built-in response caching and efficiency acceleration."""
 
     def __init__(self, adapter: Optional[GeminiAdapter] = None):
         self.adapter = adapter or GeminiAdapter()
+        self._cache = SimpleLRUCache(maxsize=512, ttl_seconds=7200)
+
+    def _compute_key(self, prefix: str, *args: Any) -> str:
+        serialized = f"{prefix}:" + ":".join(str(a) for a in args)
+        return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
     def analyze_decision(self, req: BlindSpotAnalyzeRequest) -> BlindSpotAnalysisResponse:
-        """Runs the Multi-Agent reasoning audit using Gemini 2.5 Flash with Document Grounding."""
+        """Runs the Multi-Agent reasoning audit using Gemini 2.5 Flash with Document Grounding and LRU caching."""
+        cache_key = self._compute_key(
+            "analyze",
+            req.decision_prompt,
+            req.context_reasoning,
+            req.priorities,
+            req.document_context or "",
+        )
+        cached_res = self._cache.get(cache_key)
+        if cached_res is not None:
+            logger.debug("Cache hit for analyze_decision (%s)", cache_key[:8])
+            return cached_res
         sanitized_decision = sanitize_prompt(req.decision_prompt)
         sanitized_context = sanitize_prompt(req.context_reasoning)
         sanitized_doc = sanitize_prompt(req.document_context or "")
@@ -72,7 +125,9 @@ class BlindSpotAIEngine:
 
         if not self.adapter.is_configured():
             logger.info("Gemini adapter operating in offline/mock mode.")
-            return self._generate_dynamic_audit(req)
+            res = self._generate_dynamic_audit(req)
+            self._cache.set(cache_key, res)
+            return res
 
         try:
             res = self.adapter.generate_structured(
@@ -82,14 +137,30 @@ class BlindSpotAIEngine:
             )
             if not res or not res.assumptions or len(res.assumptions) == 0:
                 logger.info("Gemini structured response empty/sparse; applying dynamic multi-scenario reasoning engine.")
-                return self._generate_dynamic_audit(req)
+                res = self._generate_dynamic_audit(req)
+            self._cache.set(cache_key, res)
             return res
         except Exception as e:
             logger.warning(f"Error invoking Gemini for Multi-Agent analysis: {e}. Falling back to dynamic mock data.")
-            return self._generate_dynamic_audit(req)
+            res = self._generate_dynamic_audit(req)
+            self._cache.set(cache_key, res)
+            return res
 
     def evaluate_stress_test(self, req: StressTestFeedbackRequest) -> StressTestFeedbackResponse:
-        """Evaluates user choice (YES / MAYBE / NO) in the interactive stress test."""
+        """Evaluates user choice (YES / MAYBE / NO) in the interactive stress test with LRU caching."""
+        cache_key = self._compute_key(
+            "stress",
+            req.decision_prompt,
+            req.context_reasoning,
+            req.tested_assumption,
+            req.scenario_premise,
+            req.user_choice,
+            req.user_notes or "",
+        )
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         prompt = STRESS_TEST_FEEDBACK_PROMPT.format(
             decision_prompt=sanitize_prompt(req.decision_prompt),
             context_reasoning=sanitize_prompt(req.context_reasoning),
@@ -100,7 +171,9 @@ class BlindSpotAIEngine:
         )
 
         if not self.adapter.is_configured():
-            return self._generate_dynamic_stress_feedback(req)
+            res = self._generate_dynamic_stress_feedback(req)
+            self._cache.set(cache_key, res)
+            return res
 
         try:
             res = self.adapter.generate_structured(
@@ -108,15 +181,29 @@ class BlindSpotAIEngine:
                 response_schema=StressTestFeedbackResponse,
                 system_instruction="You are an expert reasoning auditor evaluating a decision stress-test response.",
             )
-            if not res or not res.feedback_analysis:
-                return self._generate_dynamic_stress_feedback(req)
+            if not res or not res.verdict_title:
+                res = self._generate_dynamic_stress_feedback(req)
+            self._cache.set(cache_key, res)
             return res
         except Exception as e:
             logger.warning(f"Error during stress test evaluation: {e}. Falling back to dynamic mock.")
-            return self._generate_dynamic_stress_feedback(req)
+            res = self._generate_dynamic_stress_feedback(req)
+            self._cache.set(cache_key, res)
+            return res
 
     def challenge_reasoning(self, req: ChallengeReasoningRequest) -> ChallengeReasoningResponse:
-        """Generates adversarial constructive challenge to user's reasoning."""
+        """Generates adversarial constructive challenge to user's reasoning with LRU caching."""
+        cache_key = self._compute_key(
+            "challenge",
+            req.decision_prompt,
+            req.context_reasoning,
+            req.priorities,
+            req.document_context or "",
+        )
+        cached = self._cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         priorities_str = ", ".join(req.priorities) if req.priorities else "General"
         prompt = CHALLENGE_REASONING_PROMPT.format(
             decision_prompt=sanitize_prompt(req.decision_prompt),
@@ -125,7 +212,9 @@ class BlindSpotAIEngine:
         )
 
         if not self.adapter.is_configured():
-            return self._generate_dynamic_challenge_response(req)
+            res = self._generate_dynamic_challenge_response(req)
+            self._cache.set(cache_key, res)
+            return res
 
         try:
             res = self.adapter.generate_structured(
@@ -133,12 +222,15 @@ class BlindSpotAIEngine:
                 response_schema=ChallengeReasoningResponse,
                 system_instruction="You are an adversarial-but-constructive reasoning challenger.",
             )
-            if not res or not res.adversarial_challenge:
-                return self._generate_dynamic_challenge_response(req)
+            if not res or not res.strongest_argument:
+                res = self._generate_dynamic_challenge_response(req)
+            self._cache.set(cache_key, res)
             return res
         except Exception as e:
             logger.warning(f"Error during challenge reasoning generation: {e}. Falling back to dynamic mock.")
-            return self._generate_dynamic_challenge_response(req)
+            res = self._generate_dynamic_challenge_response(req)
+            self._cache.set(cache_key, res)
+            return res
 
     # -------------------------------------------------------------
     # DYNAMIC MULTI-SCENARIO REASONING ENGINE

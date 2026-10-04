@@ -35,10 +35,15 @@ app = FastAPI(
     debug=settings.DEBUG,
 )
 
-# 1. Register OWASP Security Headers Middleware
+from fastapi.middleware.gzip import GZipMiddleware
+
+# 1. Register GZip Compression Middleware (High Efficiency for JSON payloads)
+app.add_middleware(GZipMiddleware, minimum_size=500)
+
+# 2. Register OWASP Security Headers Middleware
 app.add_middleware(SecurityHeadersMiddleware)
 
-# 2. Register CORS Middleware
+# 3. Register CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -47,13 +52,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Register Structured Error Handlers
+# 4. Register Structured Error Handlers
 register_error_handlers(app)
 
-# 4. Direct Root Health Endpoint (Requirement Section 9)
+# 5. Direct Root Health Endpoint (Requirement Section 9)
 app.add_api_route("/health", health_check, methods=["GET"], tags=["Health"])
 
-# 5. Include API v1 Router
+# 6. Include API v1 Router
 app.include_router(router, prefix=settings.API_PREFIX)
 
 from pathlib import Path
