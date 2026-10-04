@@ -256,7 +256,7 @@ export default function BlindSpotApp() {
               </div>
               <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "6px", fontSize: "14px" }}>
                 <li>Agent 1: The Dissector (Analytical / Grounded)</li>
-                <li>Agent 2: The Antagonist (The Ruthless Cynic)</li>
+                <li>Agent 2: The Antagonist (Critical Adversary)</li>
                 <li>Agent 3: The Risk Auditor (Executive / Objective)</li>
                 <li>Document Grounding Layer</li>
               </ul>

@@ -277,10 +277,10 @@ export default function ReasoningMap({
           </div>
           <div style={{ flex: 1, minWidth: "240px" }}>
             <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--slate-gray)", textTransform: "uppercase" }}>
-              The 60-Second Litmus Test (How to Decide)
+              The Socratic Litmus Test (Questions to Ask Yourself)
             </div>
             <div style={{ fontSize: "15.5px", color: "var(--ink-black)", fontWeight: 500, lineHeight: 1.4 }}>
-              If your downside safety buffer is <strong>fully verified</strong> and no surprise high-stakes mandatory requirement exists today ➔ <strong>Hold & Recharge (Path B)</strong>. If your attendance/contract margin is <strong>fragile (&lt;75%)</strong> ➔ <strong>Commit & Show Up (Path A)</strong> to prevent irreversible debarment.
+              <strong>Key Tradeoff Question:</strong> If you commit to <strong>Path A</strong>, what is the single irreversible downside you are willing to accept? If you choose <strong>Path B</strong>, what concrete high-leverage milestone will you achieve instead of passive delay?
             </div>
           </div>
         </div>

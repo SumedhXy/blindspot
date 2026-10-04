@@ -30,7 +30,7 @@ export default function AgentTerminalTrace({ trace, groundingActive }: AgentTerm
         icon: Flame,
         color: "var(--mastercard-red, #EB001B)",
         badgeBg: "rgba(235, 0, 27, 0.1)",
-        tag: "Agent 2 • The Antagonist (The Ruthless Cynic)",
+        tag: "Agent 2 • The Antagonist (Critical Adversary)",
         emoji: "⚔️",
         roleDesc: "Actively challenges every claim, finds tensions, and maps missing variables.",
         outputLabel: "Passes Debated Claims + Risks",
